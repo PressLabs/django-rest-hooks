@@ -14,8 +14,8 @@ dead simple. Here's how to get started:
 3. Start sending hooks!
 
 Using our **built-in actions**, zero work is required to support *any* basic `created`,
-`updated`, and `deleted` actions across any Django model. We also allow for 
-**custom actions** (IE: beyond **C**R**UD**) to be simply defined and triggered 
+`updated`, and `deleted` actions across any Django model. We also allow for
+**custom actions** (IE: beyond **C**R**UD**) to be simply defined and triggered
 for any model, as well as truly custom events that let you send arbitrary
 payloads.
 
@@ -297,9 +297,9 @@ HOOK_DELIVERER = 'path.to.tasks.deliver_hook_wrapper'
 ### tasks.py ###
 
 from celery.task import Task
-import requests
 
-from django.utils import simplejson as json
+import json
+import requests
 
 
 class DeliverHook(Task):

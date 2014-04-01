@@ -115,8 +115,8 @@ class Book(models.Model):
         from rest_hooks.signals import hook_event
         hook_event.send(
             sender=self.__class__,
-            event_name='book.read',
-            obj=self # the Book object
+            action='book.read',
+            instance=self # the Book object
         )
 ```
 

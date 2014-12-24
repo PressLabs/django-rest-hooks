@@ -37,18 +37,16 @@ def find_and_fire_hook(event_name, instance, user_override=None):
 
     filters = {'event': event_name}
 
-    # Ignore the user if the user_override is False
-    if user_override is not False:
-        if user_override:
-            filters['user'] = user_override
-        elif hasattr(instance, 'user'):
-            filters['user'] = instance.user
-        elif isinstance(instance, User):
-            filters['user'] = instance
-        else:
-            raise Exception(
-                '{} has no `user` property. REST Hooks needs this.'.format(repr(instance))
-            )
+    if user_override:
+        filters['user'] = user_override
+    elif hasattr(instance, 'user'):
+        filters['user'] = instance.user
+    elif isinstance(instance, User):
+        filters['user'] = instance
+    else:
+        raise Exception(
+            '{} has no `user` property. REST Hooks needs this.'.format(repr(instance))
+        )
 
     # NOTE: This is probably up for discussion, but I think, in this
     # case, instead of raising an error, we should fire the hook for
@@ -66,7 +64,7 @@ def distill_model_event(instance, model, action, user_override=None):
     app/model mappings, convert to the defined event.name
     and let hooks fly.
 
-    If that model isn't represented, we just quit silenty.
+    If that model isn't represented, we just quit silently.
     """
     from rest_hooks.models import HOOK_EVENTS
 
@@ -79,7 +77,7 @@ def distill_model_event(instance, model, action, user_override=None):
             if model == maybe_model and action == maybe_action[0]:
                 event_name = maybe_event_name
                 if len(maybe_action) == 2:
-                    user_override = True
+                    user_override = None
                 break
         elif maybe_event_name == action:
             # Deal with custom events as well

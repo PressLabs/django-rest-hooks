@@ -1,4 +1,3 @@
-import json
 import requests
 import json
 
@@ -10,10 +9,14 @@ from rest_hooks.utils import get_module, distill_model_event
 
 from rest_hooks import signals
 
-
 HOOK_EVENTS = getattr(settings, 'HOOK_EVENTS', None)
+
 if HOOK_EVENTS is None:
     raise Exception('You need to define settings.HOOK_EVENTS!')
+
+EVENTS_CHOICES = [(e, e) for e in HOOK_EVENTS.keys()]
+
+DEFAULT_TARGET_URL = getattr(settings, 'DEFAULT_TARGET_URL', None)
 
 if getattr(settings, 'HOOK_THREADING', True):
     from rest_hooks.client import Client
@@ -23,6 +26,7 @@ else:
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
+
 class Hook(models.Model):
     """
     Stores a representation of a Hook.
@@ -31,10 +35,10 @@ class Hook(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(AUTH_USER_MODEL, related_name='hooks')
-    event = models.CharField('Event', max_length=64,
-                                      db_index=True,
-                                      choices=[(e, e) for e in HOOK_EVENTS.keys()])
-    target = models.URLField('Target URL', max_length=255)
+    event = models.CharField('Event', max_length=64, db_index=True,
+                             choices=EVENTS_CHOICES)
+    target = models.URLField('Target URL', default=DEFAULT_TARGET_URL,
+                             max_length=255)
 
     def dict(self):
         return {

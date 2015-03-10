@@ -1,3 +1,5 @@
+This is a fork of https://github.com/zapier/django-rest-hooks which adds support for global hooks and more up to date django support.
+
 ## What are Django REST Hooks?
 
 REST Hooks are fancier versions of webhooks. Traditional webhooks are usually

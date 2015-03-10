@@ -27,6 +27,7 @@ def find_and_fire_hook(event_name, instance, user_override=None):
     """
     Look up Hooks that apply
     """
+    from django.db.models import Q
     from django.contrib.auth.models import User
     from rest_hooks.models import Hook, HOOK_EVENTS
 
@@ -37,18 +38,19 @@ def find_and_fire_hook(event_name, instance, user_override=None):
     elif isinstance(instance, User):
         user = instance
     else:
-        raise Exception(
-            '{} has no `user` property. REST Hooks needs this.'.format(repr(instance))
-        )
+        user = None
 
     if not event_name in HOOK_EVENTS.keys():
         raise Exception(
             '"{}" does not exist in `settings.HOOK_EVENTS`.'.format(event_name)
         )
 
-    hooks = Hook.objects.filter(user=user, event=event_name)
+    hooks = Hook.objects.filter(Q(global_hook=True) | Q(user=user),
+                                event=event_name)
+
     for hook in hooks:
         hook.deliver_hook(instance)
+
 
 def distill_model_event(instance, model, action, user_override=None):
     """

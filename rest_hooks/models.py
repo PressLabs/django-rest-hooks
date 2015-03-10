@@ -39,8 +39,13 @@ class Hook(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, related_name='hooks')
     event = models.CharField('Event', max_length=64,
                                       db_index=True,
-                                      choices=[(e, e) for e in HOOK_EVENTS.keys()])
+                                      choices=[(e, e) for e in
+                                               sorted(HOOK_EVENTS.keys())])
     target = models.URLField('Target URL', max_length=255)
+    global_hook = models.BooleanField(default=False,
+                                      verbose_name='Global hook',
+                                      help_text='Fire the hook, regardless of '
+                                      'user owning the object.')
 
     def dict(self):
         return {
@@ -89,6 +94,8 @@ class Hook(models.Model):
     def __unicode__(self):
         return u'{} => {}'.format(self.event, self.target)
 
+    class Meta:
+        unique_together = (("user", "event", "target", "global_hook"),)
 
 ##############
 ### EVENTS ###
